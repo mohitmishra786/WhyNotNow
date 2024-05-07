@@ -1,0 +1,55 @@
+<head>
+<title>Angular Bootstrap Layout</title>
+<!-- Bootstrap CSS -->
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<script src="https://www.youtube.com/iframe_api"></script>
+</head>
+<body>
+  <div class="container-fluid h-100">
+    <div class="row h-100">
+      <div class="col navbar bg-danger text-light">
+        Navbar
+      </div>
+    </div>
+    <div class="row h-80">
+      <div class="col-9 videoPlayer bg-primary text-light" id="videoPlayer">
+        <!-- <youtube-player
+        [videoId]="videoId"
+        [width]="800"
+        [height]="500"
+        (ready)="onPlayerReady($event)"
+        (stateChange)="onPlayerStateChange($event)"
+        (error)="onPlayerError($event)">
+      </youtube-player> -->
+      <iframe [src]="videoSrc" frameborder="0" allowfullscreen></iframe>
+      </div>
+      <div class="col-3 playlistDetails bg-success text-dark">
+        <ul *ngIf="playlistItems">
+          <li *ngFor="let item of playlistItems">
+            <input type="checkbox" id="{{ item.snippet.resourceId.videoId }}" (change)="toggleVideo($event,item.snippet.resourceId.videoId)">
+            <label for="{{ item.snippet.resourceId.videoId }}" (click)="playVideo(item.snippet.resourceId.videoId)">
+              {{ item.snippet.title }}
+            </label>
+          </li>
+        </ul> 
+        Playlist details
+      </div>
+    </div>
+    <div class="row h-20">
+      <div class="col footer bg-warning text-dark">
+        Footer
+      </div>
+    </div>
+  </div>
+</body>
+<!-- <h2>Welcome to domain Component</h2>
+<p>The selected domain is {{selectedName}}</p>
+ -->
+
+<!-- 
+ <div *ngIf="playlistDetails">
+  <h3>{{ playlistDetails.title }}</h3>
+  <p>{{ playlistDetails.description }}</p>
+</div> -->
+
+

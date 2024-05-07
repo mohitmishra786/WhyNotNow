@@ -1,0 +1,33 @@
+<head>
+  <title>Angular Bootstrap Layout</title>
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <script src="https://www.youtube.com/iframe_api"></script>
+  </head>
+  <body>
+    <div class="container-fluid h-100">
+      <div class="row h-100">
+        <div class="col navbar bg-danger text-light">
+          Navbar
+        </div>
+      </div>
+      <div>
+        
+<h1>Choose your domain and stack</h1>
+<select [(ngModel)]="selectedDomain" (change)="onDomainSelect()">
+  <option *ngFor="let domain of domains" [value]="domain">{{ domain }}</option>
+</select>
+
+<select *ngIf="selectedDomain" [(ngModel)]="selectedStack" (change)="onStackSelect()">
+  <option *ngFor="let stack of domainToStacks[selectedDomain]" [value]="stack">{{ stack }}</option>
+</select>
+       </div>
+      <div class="row h-20">
+        <div class="col footer bg-warning text-dark">
+          Footer
+        </div>
+      </div>
+    </div>
+  </body>
+
+

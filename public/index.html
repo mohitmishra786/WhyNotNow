@@ -4,7 +4,7 @@
     <title>YouTube Playlist Course</title>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <style>
-        /* Add your CSS styles here */
+        /* Add CSS styles here */
     </style>
 </head>
 <body>
@@ -19,7 +19,7 @@
         <iframe id="video-iframe" width="640" height="360" src="" frameborder="0" allowfullscreen></iframe>
     </div>
     <script>
-        const playlistId = 'PLmxT2pVYo5LB5EzTPZGfFN0c2GDiSXgQe'; // Replace with your actual playlist ID
+        const playlistId = 'PLmxT2pVYo5LB5EzTPZGfFN0c2GDiSXgQe';
 
         async function fetchUserProgress() {
             try {
@@ -75,13 +75,13 @@
                 checkbox.id = `checkbox-${item.snippet.resourceId.videoId}`;
                 checkbox.checked = userProgress[item.snippet.resourceId.videoId] || false;
 
-                // Add event listener to update progress on checkbox change
+                // Added event listener to update progress on checkbox change
                 checkbox.addEventListener('change', (event) => {
                     const videoId = event.target.id.replace("checkbox-", "");
                     updateProgress(videoId, event.target.checked);
                 });
 
-                listItem.appendChild(checkbox); // Add checkbox
+                listItem.appendChild(checkbox);
                 listItem.appendChild(videoLink); 
                 videoList.appendChild(listItem); 
             });

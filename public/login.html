@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Login</title>
+</head>
+<body>
+  <h1>Login</h1>
+  <form id="loginForm">
+    <label for="username">Username:</label>
+    <input type="text" id="username" name="username" required><br><br>
+
+    <label for="password">Password:</label>
+    <input type="password" id="password" name="password" required><br><br>
+
+    <button type="submit">Login</button>
+  </form>
+
+  <p>Don't have an account? <a href="http://localhost:5000/signup.html">Signup here</a></p>
+
+  <script>
+    const form = document.getElementById('loginForm');
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+
+      // Get form data
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+
+      try {
+        // Send login data to backend
+        const response = await fetch('/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ username, password }),
+        });
+
+        if (response.ok) {
+          const data = await response.json(); // Parse JSON response
+          console.log(data.message); // Log the success message
+          window.location.href = 'http://localhost:5000/home'; // Redirect to home page
+        } else {
+          const errorData = await response.json();
+          console.error('Login failed:', errorData.error);
+          // TODO: Display error message to the user
+        }
+      } catch (error) {
+        console.error('Error during login:', error);
+        // TODO: Display error message to the user
+      }
+    });
+  </script>
+</body>
+</html>
+
+    

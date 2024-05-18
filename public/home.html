@@ -1,0 +1,28 @@
+      
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Home</title>
+</head>
+<body>
+  <h1>Welcome!</h1>
+  <button id="playlistButton">Playlist</button> <br><br>
+  <button id="logoutButton">Logout</button>
+  <script>
+    // Get the buttons by their IDs
+    const playlistButton = document.getElementById('playlistButton');
+    const logoutButton = document.getElementById('logoutButton');
+
+    // Add event listeners
+    playlistButton.addEventListener('click', () => {
+        window.location.href = 'http://localhost:5000/index.html';
+    });
+
+    logoutButton.addEventListener('click', () => {
+        window.location.href = 'http://localhost:5000/logout';
+    });
+  </script>
+</body>
+</html>
+
+    

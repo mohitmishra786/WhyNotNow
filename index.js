@@ -187,25 +187,41 @@ app.get('/home', (req, res) => {
 
 // 1. Get User Progress 
 app.get('/api/courses/:playlistId/progress', (req, res) => {
-    const userId = req.session.username ? req.session.username : 'temp_user'; // Get username from session
-
+    const username = req.session.username ? req.session.username : 'temp_user'; // Get username from session
     const { playlistId } = req.params;
 
-    const sql = `SELECT video_id, completed 
-                 FROM user_course_progress 
-                 WHERE user_id = ? AND playlist_id = ?`;
-
-    db.query(sql, [userId, playlistId], (err, results) => {
+    // 1. Get user_id from users table based on username
+    const getUserIdSql = 'SELECT id FROM users WHERE username = ?';
+    db.query(getUserIdSql, [username], (err, result) => {
         if (err) {
-            console.error("Error fetching user progress:", err);
-            res.status(500).send('Error fetching user progress');
-        } else {
-            const progress = {};
-            results.forEach(row => {
-                progress[row.video_id] = row.completed === 1; 
-            });
-            res.json(progress);
+            console.error("Error getting user ID:", err);
+            return res.status(500).send('Error fetching user progress');
         }
+
+        if (result.length === 0) {
+            console.error("User not found:", username);
+            return res.status(500).send('Error fetching user progress');
+        }
+
+        const userId = result[0].id; // Get the actual user_id
+
+        // 2. Fetch progress based on user_id and playlist_id
+        const sql = `SELECT video_id, completed 
+                     FROM user_course_progress 
+                     WHERE user_id = ? AND playlist_id = ?`;
+
+        db.query(sql, [userId, playlistId], (err, results) => {
+            if (err) {
+                console.error("Error fetching user progress:", err);
+                res.status(500).send('Error fetching user progress');
+            } else {
+                const progress = {};
+                results.forEach(row => {
+                    progress[row.video_id] = row.completed === 1; 
+                });
+                res.json(progress);
+            }
+        });
     });
 });
 

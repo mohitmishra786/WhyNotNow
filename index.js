@@ -86,41 +86,41 @@ app.get('/playlist', async (req, res) => {
 
 // 1. Signup Endpoint
 app.post('/signup', async (req, res) => {
-  const { name, username, email, password } = req.body;
-
-  try {
-      // Check if username already exists
-      const checkUsernameSql = 'SELECT 1 FROM users WHERE username = ?';
-      db.query(checkUsernameSql, [username], async (err, result) => {
-          if (err) {
-              console.error("Error checking username:", err);
-              return res.status(500).json({ error: 'Failed to check username' });
-          }
-
-          if (result.length > 0) {
-              return res.status(409).json({ error: 'Username already exists' });
-          }
-
-          // Hash the password
-          const hashedPassword = await bcrypt.hash(password, 10); 
-
-          // Insert the new user into the database
-          const insertUserSql = 'INSERT INTO users (name, username, email, password) VALUES (?, ?, ?, ?)';
-          db.query(insertUserSql, [name, username, email, hashedPassword], (err, result) => {
-              if (err) {
-                  console.error("Error inserting user:", err);
-                  return res.status(500).json({ error: 'Failed to create user' });
-              }
-
-              console.log("User created successfully!");
-              res.status(200).json({ message: 'User created successfully! You can now log in.' }); 
-              // Frontend will handle the redirect
-          });
-      });
-  } catch (error) {
-      console.error("Error during signup:", error);
-      res.status(500).json({ error: 'Failed to sign up' });
-  }
+    const { name, username, email, password } = req.body;
+  
+    try {
+        // Check if username or email already exists
+        const checkUserSql = 'SELECT 1 FROM users WHERE username = ? OR email = ?';
+        db.query(checkUserSql, [username, email], async (err, result) => {
+            if (err) {
+                console.error("Error checking username or email:", err);
+                return res.status(500).json({ error: 'Failed to check user data' });
+            }
+  
+            if (result.length > 0) {
+                return res.status(409).json({ error: 'Username or email already exists' });
+            }
+  
+            // Hash the password
+            const hashedPassword = await bcrypt.hash(password, 10); 
+  
+            // Insert the new user into the database
+            const insertUserSql = 'INSERT INTO users (name, username, email, password) VALUES (?, ?, ?, ?)';
+            db.query(insertUserSql, [name, username, email, hashedPassword], (err, result) => {
+                if (err) {
+                    console.error("Error inserting user:", err);
+                    return res.status(500).json({ error: 'Failed to create user' });
+                }
+  
+                console.log("User created successfully!");
+                res.status(200).json({ message: 'User created successfully! You can now log in.' }); 
+                // Frontend will handle the redirect
+            });
+        });
+    } catch (error) {
+        console.error("Error during signup:", error);
+        res.status(500).json({ error: 'Failed to sign up' });
+    }
 });
 
 // 2. Login Endpoint 

@@ -2,64 +2,28 @@
 <html>
 <head>
   <title>Signup</title>
+  <link rel="stylesheet" href="signup.css"> 
 </head>
 <body>
-  <h1>Signup</h1>
-  <form id="signupForm" action="http://localhost:5000/signup" method="POST">
-    <label for="name">Name:</label>
-    <input type="text" id="name" name="name" required><br><br>
+  <div class="signup-container"> 
+    <h1>Sign Up</h1>
 
-    <label for="username">Username:</label>
-    <input type="text" id="username" name="username" required><br><br>
+    <form id="signupForm" action="http://localhost:5000/signup" method="POST">
+      <input type="text" id="name" name="name" placeholder="Full Name" required><br><br>
+      <input type="text" id="username" name="username" placeholder="Username" required><br><br>
+      <input type="email" id="email" name="email" placeholder="Email Address" required><br><br>
+      <input type="password" id="password" name="password" placeholder="Password" required autocomplete="new-password"><br><br>
+      <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirm Password" required autocomplete="new-password"><br><br>
+      <button type="submit">Sign Up</button>
+    </form>
 
-    <label for="email">Email:</label>
-    <input type="email" id="email" name="email" required><br><br>
+    <p>Already have an account? <a href="login.html">Log In</a></p>
+    <p>Or</p>
+    <button class="social-button google">
+      <img src="./icons/google.svg" alt="Google Icon"> Sign up with Google
+    </button><br><br>
+  </div>
 
-    <label for="password">Password:</label>
-    <input type="password" id="password" name="password" required autocomplete="new-password"><br><br>
-
-    <button type="submit">Signup</button>
-  </form>
-
-  <p>Already have an account? <a href="http://localhost:5000/login.html">Login here</a></p>
-
-  <script>
-    const form = document.getElementById('signupForm');
-    form.addEventListener('submit', async (event) => {
-      event.preventDefault();
-
-      // Get form data
-      const name = document.getElementById('name').value;
-      const username = document.getElementById('username').value;
-      const email = document.getElementById('email').value;
-      const password = document.getElementById('password').value;
-
-      try {
-        // Send signup data to backend (Corrected fetch URL)
-        const response = await fetch('http://localhost:5000/signup', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ name, username, email, password }),
-        });
-
-        if (response.ok) {
-          console.log('Signup successful!');
-          form.reset(); // Clear form fields
-          window.location.href = 'http://localhost:5000/login.html'; // Redirect to login page
-        } else {
-          const errorData = await response.json();
-          console.error('Signup failed:', errorData.error);
-          // TODO: Display error message to the user
-        }
-      } catch (error) {
-        console.error('Error during signup:', error);
-        // TODO: Display error message to the user
-      }
-    });
-  </script>
+  <script src="signup.js"></script> 
 </body>
 </html>
-
-    

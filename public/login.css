@@ -1,0 +1,76 @@
+body {
+    font-family: sans-serif;
+    background: linear-gradient(to bottom right, #c2e59c, #64b3f4); 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+  }
+  
+  .login-container {
+    background-color: rgba(255, 255, 255, 0.2); 
+    padding-left: 30px;
+    padding-right: 60px;
+    padding-top: 40px;
+    padding-bottom: 40px;
+    border-radius: 10px;
+    backdrop-filter: blur(10px); 
+    text-align: center;
+  }
+  
+  h1 {
+    color: #333;
+  }
+  
+  input[type="text"],
+  input[type="password"] {
+    width: 100%;
+    padding: 15px;
+    margin: 10px 0;
+    border: none;
+    border-radius: 5px;
+    background-color: white;
+  }
+  
+  button[type="submit"] {
+    background-color: #333;
+    color: white;
+    padding: 15px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .social-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: transparent; 
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px; 
+    width: 100%; 
+  }
+  
+  .social-button img {
+    width: 24px;
+    height: 24px;
+    margin-right: 10px;
+  }
+  
+  .google {
+    background-color: #f0f0f0;
+    color: #333;
+  }
+  
+  a {
+    color: #64b3f4; 
+    text-decoration: none;
+  }
+  
+  a:hover {
+    text-decoration: underline;
+  }

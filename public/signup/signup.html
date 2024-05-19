@@ -6,7 +6,7 @@
 </head>
 <body>
   <div class="signup-container"> 
-    <h1>Sign Up</h1>
+    <div id="errorMessage" style="color: red;"></div> <h1>Sign Up</h1>
 
     <form id="signupForm" action="http://localhost:5000/signup" method="POST">
       <input type="text" id="name" name="name" placeholder="Full Name" required><br><br>
@@ -17,10 +17,10 @@
       <button type="submit">Sign Up</button>
     </form>
 
-    <p>Already have an account? <a href="login.html">Log In</a></p>
+    <p>Already have an account? <a href="../login/login.html">Log In</a></p>
     <p>Or</p>
     <button class="social-button google">
-      <img src="./icons/google.svg" alt="Google Icon"> Sign up with Google
+      <img src="../icons/google.svg" alt="Google Icon"> Sign up with Google
     </button><br><br>
   </div>
 

@@ -39,10 +39,10 @@ db.connect(err => {
     }
 });
 
-// Session Middleware (Updated with basic session management)
+// Session Middleware
 app.use(cookieParser());
 app.use(session({
-    secret: process.env.SESSION_SECRET || 'f8b78009-3e98-471f-a627-38b5a35d4529', // Example
+    secret: process.env.SESSION_SECRET || 'f8b78009-3e98-471f-a627-38b5a35d4529', 
     resave: false,
     saveUninitialized: false,
 }));
@@ -50,8 +50,8 @@ app.use(session({
 app.use(helmet({
     contentSecurityPolicy: {
       directives: {
-        defaultSrc: ["'self'"], // Allow resources from domain
-        scriptSrc: ["'self'", "'unsafe-inline'"], // Allow inline scripts
+        defaultSrc: ["'self'"], 
+        scriptSrc: ["'self'", "'unsafe-inline'"], 
       }
     }
 }));
@@ -59,68 +59,61 @@ app.use(helmet({
 // Fetch playlist data
 app.get('/playlist', async (req, res) => {
     try {
-      // Fetch playlist details
-      const playlistDetailsUrl = `https://www.googleapis.com/youtube/v3/playlists?part=snippet&id=${playlistId}&key=${apiKey}`;
-      const playlistDetailsResponse = await axios.get(playlistDetailsUrl);
-      const playlistDetails = playlistDetailsResponse.data.items[0].snippet;
+        const playlistDetailsUrl = `https://www.googleapis.com/youtube/v3/playlists?part=snippet&id=${playlistId}&key=${apiKey}`;
+        const playlistDetailsResponse = await axios.get(playlistDetailsUrl);
+        const playlistDetails = playlistDetailsResponse.data.items[0].snippet;
 
-      // Fetch playlist items
-      const playlistItemsUrl = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=${playlistId}&key=${apiKey}`;
-      const playlistItemsResponse = await axios.get(playlistItemsUrl);
-      const playlistItems = playlistItemsResponse.data.items;
+        const playlistItemsUrl = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=${playlistId}&key=${apiKey}`;
+        const playlistItemsResponse = await axios.get(playlistItemsUrl);
+        const playlistItems = playlistItemsResponse.data.items;
 
-      // Send both playlist details and items as a single object
-      res.json({
-          details: playlistDetails,
-          items: playlistItems
-      });
+        console.log("YouTube API Response:", playlistDetailsResponse.data);
+
+        res.json({
+            details: playlistDetails,
+            items: playlistItems
+        });
     } catch (error) {
-      console.error("Error fetching playlist data:", error);
-      res.status(500).send('Error fetching playlist data');
+        console.error("Error fetching playlist data:", error);
+        res.status(500).send('Error fetching playlist data');
     }
-  });
+});
 
-// --------------------------------
 // User Authentication Endpoints 
-// --------------------------------
 
 // 1. Signup Endpoint
 app.post('/signup', async (req, res) => {
-  const { name, username, email, password } = req.body;
-
-  try {
-      // Check if username already exists
-      const checkUsernameSql = 'SELECT 1 FROM users WHERE username = ?';
-      db.query(checkUsernameSql, [username], async (err, result) => {
-          if (err) {
-              console.error("Error checking username:", err);
-              return res.status(500).json({ error: 'Failed to check username' });
-          }
-
-          if (result.length > 0) {
-              return res.status(409).json({ error: 'Username already exists' });
-          }
-
-          // Hash the password
-          const hashedPassword = await bcrypt.hash(password, 10); 
-
-          // Insert the new user into the database
-          const insertUserSql = 'INSERT INTO users (name, username, email, password) VALUES (?, ?, ?, ?)';
-          db.query(insertUserSql, [name, username, email, hashedPassword], (err, result) => {
-              if (err) {
-                  console.error("Error inserting user:", err);
-                  return res.status(500).json({ error: 'Failed to create user' });
-              }
-
-              console.log("User created successfully!");
-              res.status(200).json({ message: 'User created successfully! You can now log in.' }); 
-              // Frontend will handle the redirect
-          });
-      });
-  } catch (error) {
-      console.error("Error during signup:", error);
-      res.status(500).json({ error: 'Failed to sign up' });
-  }
+    const { name, username, email, password } = req.body;
+  
+    try {
+        const checkUserSql = 'SELECT 1 FROM users WHERE username = ? OR email = ?';
+        db.query(checkUserSql, [username, email], async (err, result) => {
+            if (err) {
+                console.error("Error checking username or email:", err);
+                return res.status(500).json({ error: 'Failed to check user data' });
+            }
+  
+            if (result.length > 0) {
+                return res.status(409).json({ error: 'Username or email already exists' });
+            }
+  
+            const hashedPassword = await bcrypt.hash(password, 10); 
+  
+            const insertUserSql = 'INSERT INTO users (name, username, email, password) VALUES (?, ?, ?, ?)';
+            db.query(insertUserSql, [name, username, email, hashedPassword], (err, result) => {
+                if (err) {
+                    console.error("Error inserting user:", err);
+                    return res.status(500).json({ error: 'Failed to create user' });
+                }
+  
+                console.log("User created successfully!");
+                res.redirect('/login/login.html');  // Redirect to login page
+            });
+        });
+    } catch (error) {
+        console.error("Error during signup:", error);
+        res.status(500).json({ error: 'Failed to sign up' });
+    }
 });
 
 // 2. Login Endpoint 
@@ -146,13 +139,10 @@ app.post('/login', async (req, res) => {
                 return res.status(401).json({ error: 'Invalid username or password' });
             }
 
-            // Successful login - set up session 
             req.session.loggedIn = true;
             req.session.username = user.username; 
             console.log("User logged in successfully!");
-
-            // Send JSON response 
-            res.status(200).json({ message: 'Login successful!' }); 
+            res.redirect('/home/home.html');  // Redirect to home on success
         });
 
     } catch (error) {
@@ -168,7 +158,7 @@ app.get('/logout', (req, res) => {
             console.error("Error destroying session:", err);
             res.status(500).send('Failed to log out');
         } else {
-            res.redirect('/login.html'); // Add .html to the redirect URL
+            res.redirect('/login/login.html'); // Redirect to login after logout
         }
     });
 });
@@ -176,10 +166,9 @@ app.get('/logout', (req, res) => {
 // 4. Home Endpoint
 app.get('/home', (req, res) => {
     if (req.session.loggedIn) {
-        // Update path if home.html is in a different location
-        res.sendFile(__dirname + '/public/home.html'); 
+        res.sendFile(__dirname + '/public/home/home.html'); 
     } else {
-        res.redirect('/login'); 
+        res.redirect('/login/login.html'); 
     }
 });
 
@@ -190,7 +179,6 @@ app.get('/api/courses/:playlistId/progress', (req, res) => {
     const username = req.session.username ? req.session.username : 'temp_user'; // Get username from session
     const { playlistId } = req.params;
 
-    // 1. Get user_id from users table based on username
     const getUserIdSql = 'SELECT id FROM users WHERE username = ?';
     db.query(getUserIdSql, [username], (err, result) => {
         if (err) {
@@ -203,9 +191,8 @@ app.get('/api/courses/:playlistId/progress', (req, res) => {
             return res.status(500).send('Error fetching user progress');
         }
 
-        const userId = result[0].id; // Get the actual user_id
+        const userId = result[0].id; 
 
-        // 2. Fetch progress based on user_id and playlist_id
         const sql = `SELECT video_id, completed 
                      FROM user_course_progress 
                      WHERE user_id = ? AND playlist_id = ?`;
@@ -232,7 +219,6 @@ app.post('/api/courses/:playlistId/update', (req, res) => {
     const { playlistId } = req.params;
     const { videoId, completed } = req.body;
 
-    // 1. Get user_id from users table based on username
     const getUserIdSql = 'SELECT id FROM users WHERE username = ?';
     db.query(getUserIdSql, [username], (err, result) => {
         if (err) {
@@ -247,7 +233,6 @@ app.post('/api/courses/:playlistId/update', (req, res) => {
 
         const userId = result[0].id;
 
-        // 2. Insert or update user progress 
         const sql = `
             INSERT INTO user_course_progress (user_id, username, playlist_id, video_id, completed) 
             VALUES (?, ?, ?, ?, ?)
@@ -262,17 +247,6 @@ app.post('/api/courses/:playlistId/update', (req, res) => {
             res.sendStatus(200); 
         });
     });
-});
-
-// --------------------------------
-// Protected Route - Example
-// --------------------------------
-app.get('/home', (req, res) => {
-  if (req.session.loggedIn) {
-      res.sendFile(__dirname + '/home.html');
-  } else {
-      res.redirect('/login'); // Redirect to login if not logged in
-  }
 });
 
 app.listen(port, () => {

@@ -43,7 +43,8 @@ form.addEventListener('submit', async (event) => {
 
     if (response.ok) {
       console.log('Signup successful!');
-      window.location.href = '/login.html'; 
+      form.reset();
+      window.location.href = '/login/login.html'; 
     } else {
       const errorData = await response.json();
       console.error('Signup failed:', errorData.error);

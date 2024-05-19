@@ -1,0 +1,82 @@
+body {
+    font-family: sans-serif;
+    background: linear-gradient(to bottom right, #c2e59c, #64b3f4); /* Blue gradient */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+  }
+  
+  .signup-container {
+    background-color: rgba(255, 255, 255, 0.2); /* White background with transparency */
+    padding-left: 30px;
+    padding-right: 60px;
+    padding-top: 40px;
+    padding-bottom: 40px;
+    border-radius: 10px;
+    backdrop-filter: blur(10px); /* Frosted glass effect */
+    text-align: center;
+  }
+  
+  h1 {
+    color: #333;
+  }
+  
+  input[type="text"],
+  input[type="email"],
+  input[type="password"] {
+    width: 100%;
+    padding: 15px;
+    margin: 10px 0;
+    border: none;
+    border-radius: 5px;
+    background-color: white;
+  }
+  
+  button[type="submit"] {
+    background-color: #333;
+    color: white;
+    padding: 15px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .social-button {
+    display: flex;
+    align-items: center; 
+    justify-content: center;
+    background-color: transparent; /* Transparent background */
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px; /* Add some space between buttons */
+    width: 100%; /* Make the social buttons full width */
+  }
+  
+  .social-button img {
+    width: 20px;
+    height: 20px;
+    margin-right: 10px;
+  }
+  
+  .google {
+    background-color: #f0f0f0; /* Light gray for Google */
+    color: #333;
+  }
+  
+  .facebook {
+    background-color: #4267B2; /* Facebook blue */
+    color: white;
+  }
+  
+  a {
+    color: #64b3f4; /* Light blue link color */
+    text-decoration: none;
+  }
+  
+  a:hover {
+    text-decoration: underline;
+  }

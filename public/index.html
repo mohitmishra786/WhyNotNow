@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>YouTube Playlist Course</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <style>
+        /* Add CSS styles here */
+    </style>
+</head>
+<body>
+    <h1>My YouTube Playlist Course</h1>
+    <div id="playlist-container">
+        <h2 id="playlist-title"></h2>
+        <p id="playlist-description"></p>
+        <ul id="video-list"></ul> 
+    </div>
+    <div id="video-container">
+        <p>Click on a video to play it here:</p>
+        <iframe id="video-iframe" width="640" height="360" src="" frameborder="0" allowfullscreen></iframe>
+    </div>
+
+    <button onclick="window.location.href = '/home'">Home</button> <br><br>
+    <button onclick="window.location.href = '/logout'">Logout</button>
+    <script>
+        const playlistId = 'PLmxT2pVYo5LB5EzTPZGfFN0c2GDiSXgQe';
+
+        async function fetchUserProgress() {
+            try {
+                const response = await axios.get(`http://localhost:5000/api/courses/${playlistId}/progress`);
+                return response.data;
+            } catch (error) {
+                console.error("Error fetching user progress:", error);
+                return {};
+            }
+        }
+
+        async function fetchPlaylistData(userProgress) {
+            try {
+                const response = await axios.get(`http://localhost:5000/playlist`);
+                const { details, items } = response.data;
+                displayPlaylist(details, items, userProgress);
+            } catch (error) {
+                console.error("Error fetching playlist data:", error);
+            }
+        }
+
+        async function updateProgress(videoId, completed) {
+            try {
+                await axios.post(`http://localhost:5000/api/courses/${playlistId}/update`, {
+                    videoId: videoId,
+                    completed: completed
+                });
+                console.log(`Progress updated for ${videoId}: ${completed}`);
+            } catch (error) {
+                console.error("Error updating progress:", error);
+            }
+        }
+
+        function displayPlaylist(details, items, userProgress) {
+            const playlistTitle = document.getElementById("playlist-title");
+            const playlistDescription = document.getElementById("playlist-description");
+            const videoList = document.getElementById("video-list");
+
+            playlistTitle.textContent = details.title;
+            playlistDescription.textContent = details.description;
+
+            items.forEach(item => {
+                const listItem = document.createElement("li");
+                const videoLink = document.createElement("a");
+                videoLink.href = `https://www.youtube.com/watch?v=${item.snippet.resourceId.videoId}`;
+                videoLink.textContent = item.snippet.title;
+                videoLink.target = "_blank"; 
+                videoLink.addEventListener('click', onVideoClick);
+
+                // Checkbox to mark as complete
+                const checkbox = document.createElement("input");
+                checkbox.type = "checkbox";
+                checkbox.id = `checkbox-${item.snippet.resourceId.videoId}`;
+                checkbox.checked = userProgress[item.snippet.resourceId.videoId] || false;
+
+                // Added event listener to update progress on checkbox change
+                checkbox.addEventListener('change', (event) => {
+                    const videoId = event.target.id.replace("checkbox-", "");
+                    updateProgress(videoId, event.target.checked);
+                });
+
+                listItem.appendChild(checkbox);
+                listItem.appendChild(videoLink); 
+                videoList.appendChild(listItem); 
+            });
+        }
+
+        function onVideoClick(event) {
+            event.preventDefault();
+            const videoId = event.target.href.split('v=')[1];
+            const iframe = document.getElementById("video-iframe");
+            iframe.src = `https://www.youtube.com/embed/${videoId}`;
+        }
+
+        async function initialize() {
+            const userProgress = await fetchUserProgress();
+            fetchPlaylistData(userProgress);
+        }
+
+        initialize();
+    </script>
+</body>
+</html>

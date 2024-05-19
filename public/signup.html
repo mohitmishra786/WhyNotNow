@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Signup</title>
+</head>
+<body>
+  <h1>Signup</h1>
+  <form id="signupForm" action="http://localhost:5000/signup" method="POST">
+    <label for="name">Name:</label>
+    <input type="text" id="name" name="name" required><br><br>
+
+    <label for="username">Username:</label>
+    <input type="text" id="username" name="username" required><br><br>
+
+    <label for="email">Email:</label>
+    <input type="email" id="email" name="email" required><br><br>
+
+    <label for="password">Password:</label>
+    <input type="password" id="password" name="password" required autocomplete="new-password"><br><br>
+
+    <button type="submit">Signup</button>
+  </form>
+
+  <p>Already have an account? <a href="http://localhost:5000/login.html">Login here</a></p>
+
+  <script>
+    const form = document.getElementById('signupForm');
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+
+      // Get form data
+      const name = document.getElementById('name').value;
+      const username = document.getElementById('username').value;
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+
+      try {
+        // Send signup data to backend (Corrected fetch URL)
+        const response = await fetch('http://localhost:5000/signup', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ name, username, email, password }),
+        });
+
+        if (response.ok) {
+          console.log('Signup successful!');
+          form.reset(); // Clear form fields
+          window.location.href = 'http://localhost:5000/login.html'; // Redirect to login page
+        } else {
+          const errorData = await response.json();
+          console.error('Signup failed:', errorData.error);
+          // TODO: Display error message to the user
+        }
+      } catch (error) {
+        console.error('Error during signup:', error);
+        // TODO: Display error message to the user
+      }
+    });
+  </script>
+</body>
+</html>
+
+    

@@ -47,6 +47,51 @@ nav img{
 .nav-links ul li:hover::after{
     width: 100%;
 }
+
+/* Dropdown Styling */
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+  
+.dropdown-content {
+    display: none; 
+    position: absolute;
+    background-color: #2980b9; 
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+}
+  
+.dropdown-content a {
+    color: black; /* Make the text visible */
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+  
+.dropdown-content a:hover {
+    background-color: #2c2323;
+    transition: 1s;
+}
+  
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+  
+/* Dropdown Button Styling */
+.dropbtn { 
+    color: #fff; /* White text color for the button */
+    text-decoration: none; /* Remove underlines */
+    padding: 8px 12px; /* Add some padding */
+    border-radius: 5px; /* Optional: Rounded corners */
+}
+  
+.dropbtn:hover {
+    background-color: #2980b9; /* Example: Darker blue on hover */
+    transition: 1s;
+}
+  
 .text-box{
     color: #fff;
     width: 90%;
@@ -86,6 +131,52 @@ nav .fa{
     display: none;
 }
 
+/* Contact Form Container */
+.contact-form-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 40%; /* Adjust as needed */
+    padding: 30px;
+    /* Remove grey background: background-color: rgba(255, 255, 255, 0.8); */ 
+    z-index: 2; 
+  }
+  
+  .contact-form label {
+    display: block; /* Make labels block-level for vertical arrangement */
+    margin-bottom: 5px; 
+  }
+  
+  .contact-form input,
+  .contact-form textarea {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px; /* Add spacing between fields */
+    box-sizing: border-box;
+    border: 1px solid rgba(255, 255, 255, 0.5); /* Subtle white border */
+    background-color: transparent; /* Transparent background */
+    color: white; /* White text color */
+  }
+  
+  .contact-form button {
+    background-color: #4CAF50; 
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.3s ease; /* Add a smooth transition */
+  }
+  
+  .contact-form button:hover {
+    background-color: #45a049; /* Darker green on hover */
+  }
+
 @media(max-width: 700px){
     *{
         overflow-x: hidden;
@@ -93,9 +184,7 @@ nav .fa{
     .text-box h1{
         font-size: 20px;
     }
-    .nav-links ul li{
-        display: block;
-    }
+
     .nav-links{
         position: absolute;
         background: #f44336;
@@ -105,6 +194,10 @@ nav .fa{
         right: -200px;
         text-align: left;
         z-index: 2;
+    }
+
+    .nav-links ul li{
+        display: block;
     }
 
     nav .fa{

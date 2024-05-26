@@ -7,6 +7,8 @@ const session = require('express-session');
 const path = require('path');
 const helmet = require('helmet');
 const cookieParser = require('cookie-parser');
+const nodemailer = require('nodemailer');
+const bodyParser = require('body-parser');
 require('dotenv').config();
 
 const app = express();
@@ -55,6 +57,43 @@ app.use(helmet({
       }
     }
 }));
+
+// Middleware to parse form data
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+
+// Route to handle contact form submission
+app.post('/send-email', (req, res) => {
+    const { name, email, subject, message } = req.body;
+  
+    // Create a transporter using your email provider's settings
+    const transporter = nodemailer.createTransport({
+      service: 'gmail', // e.g., 'gmail', 'yahoo', 'hotmail'
+      auth: {
+        user: 'immadmohit@gmail.com', 
+        pass: 'yhlk rzfk pdes rqlu'
+      }
+    });
+  
+    // Set up email data
+    const mailOptions = {
+      from: email, // Sender's email (from the form)
+      to: 'immadmohit@gmail.com', // Your email address 
+      subject: subject,
+      text: `Name: ${name}\nEmail: ${email}\n\n${message}`
+    };
+  
+    // Send the email
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.log('Error sending email:', error);
+        res.status(500).send('Error sending email'); // Respond with an error
+      } else {
+        console.log('Email sent:', info.response);
+        res.redirect('/contact/contact.html'); // Redirect on success
+      }
+    });
+  });
 
 // Fetch playlist data
 app.get('/playlist', async (req, res) => {

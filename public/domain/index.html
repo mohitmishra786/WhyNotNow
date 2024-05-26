@@ -139,23 +139,15 @@
             }
         }
 
-        function onVideoClick(event) {
-            event.preventDefault(); 
+        function onVideoClick(event, playlistTitle, playlistDescription) { 
+            event.preventDefault();
             const videoId = event.target.href.split('v=')[1];
             const iframe = document.getElementById("video-iframe");
             iframe.src = `https://www.youtube.com/embed/${videoId}`; 
 
-            // Get playlist details 
-            const playlistName = event.target.closest('li').querySelector('a').textContent; // Use textContent
-            fetch(`http://localhost:5000/playlist?playlist=${playlistName}`) // Remove pageToken from the URL
-                .then(response => response.json())
-                .then(playlistData => {
-                    document.getElementById('playlist-title').textContent = playlistData.details.title;
-                    document.getElementById('playlist-description').textContent = playlistData.details.description;
-                })
-                .catch(error => {
-                    console.error("Error fetching playlist data:", error);
-                });
+            // Update playlist title and description
+            document.getElementById('playlist-title').textContent = playlistTitle;
+            document.getElementById('playlist-description').textContent = playlistDescription; 
         }
 
         function displayPlaylist(details, items, userProgress) {
@@ -181,7 +173,9 @@
                 videoLink.href = `https://www.youtube.com/watch?v=${item.snippet.resourceId.videoId}`;
                 videoLink.textContent = item.snippet.title;
                 videoLink.target = "_blank"; 
-                videoLink.addEventListener('click', onVideoClick);
+                videoLink.addEventListener('click', (event) => {
+                    onVideoClick(event, details.title, details.description); // Pass details here
+                });
 
                 // Checkbox to mark as complete
                 const checkbox = document.createElement("input");

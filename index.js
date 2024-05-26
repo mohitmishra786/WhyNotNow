@@ -145,7 +145,7 @@ app.get('/playlist', async (req, res) => {
         const playlistDetails = playlistDetailsResponse.data.items[0].snippet;
 
         // --- Fetch playlist items ---
-        const playlistItemsUrl = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=${playlistId}&key=${apiKey}&pageToken=${pageToken}`;
+        const playlistItemsUrl = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=100&playlistId=${playlistId}&key=${apiKey}&pageToken=${pageToken}`;
         const playlistItemsResponse = await axios.get(playlistItemsUrl);
         const playlistItems = playlistItemsResponse.data.items;
 

@@ -87,9 +87,12 @@
                 const response = await axios.get(`http://localhost:5000/playlist?playlist=${playlistName}`); 
                 const { details, items } = response.data;
 
+                // Populate allPlaylistItems here, after the axios call 
+                allPlaylistItems = items; // Store the fetched items
+
                 // Now fetch user progress and display the playlist
                 const userProgress = await fetchUserProgress();
-                displayPlaylist(allPlaylistItems[0].snippet, allPlaylistItems, {}); // Pass details from the first item
+                displayPlaylist(details, allPlaylistItems, {}); // Pass details from the first item
 
             } catch (error) {
                 console.error("Error loading playlist:", error);

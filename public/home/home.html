@@ -42,6 +42,29 @@
 
   <!-- JavaScript for Toggle Menu -->
   <script>
+    // Fetch playlists and populate the dropdown dynamically
+    document.addEventListener('DOMContentLoaded', () => {
+      fetch('http://localhost:5000/playlists')
+        .then(response => response.json())
+        .then(playlists => {
+          // Store fetched playlists globally
+          window.playLists = playlists; 
+
+          const playlistDropdown = document.querySelector('.dropdown-content');
+          playlistDropdown.innerHTML = ''; // Clear default content
+
+          // Add each playlist as a link
+          for (const playlistName in playlists) {
+            const playlistId = playlists[playlistName];
+            const link = document.createElement('a');
+            link.href = `../domain/index.html?playlist=${playlistName}`; 
+            link.textContent = playlistName;
+            playlistDropdown.appendChild(link);
+          }
+        })
+        .catch(error => console.error('Error fetching playlists:', error));
+    });
+    
     var navLinks = document.getElementById("navLinks");
     function showMenu(){
       navLinks.style.right = "0";

@@ -1,40 +1,51 @@
+/* General Styles */
 *{
     margin: 0;
     padding: 0;
     font-family: "Poppins", sans-serif;
+    box-sizing: border-box; /* Include box-sizing for better layout control */
 }
-.header{
+
+/* Header Styles */
+.header {
     min-height: 100vh;
     width: 100%;
     background-image: linear-gradient(rgba(4, 9, 30, 0.7), rgba(4, 9, 30, 0.7)), url(./images/homeBG.jpg);
     background-position: center;
     background-size: cover;
-    position: relative;
+    position: relative; /* Key for positioning child elements */
 }
+
+/* Navigation Styles */
 nav{
     display: flex;
     padding: 2% 6%;
     justify-content: space-between;
     align-items: center;
 }
+
 nav img{
     width: 60px;
 }
+
 .nav-links{
     flex: 1;
     text-align: right;
 }
+
 .nav-links ul li{
     list-style: none;
     display: inline-block;
     padding: 8px 12px;
     position: relative;
 }
+
 .nav-links ul li a{
     color: #fff;
     text-decoration: none;
     font-size: 13px;
 }
+
 .nav-links ul li::after{
     content: '';
     width: 0%;
@@ -44,6 +55,7 @@ nav img{
     margin: auto;
     transition: 0.5s;
 }
+
 .nav-links ul li:hover::after{
     width: 100%;
 }
@@ -91,7 +103,8 @@ nav img{
     background-color: #2980b9; /* Example: Darker blue on hover */
     transition: 1s;
 }
-  
+
+/* Text Box Styles */
 .text-box{
     color: #fff;
     width: 90%;
@@ -101,14 +114,18 @@ nav img{
     transform: translate(-50%, -50%);
     text-align: center;
 }
+
 .text-box h1{
     font-size: 62px;
 }
+
 .text-box p{
     margin: 10px 0 40px;
     font-size: 14px;
     color: #fff;
 }
+
+/* Button Styles */
 .hero-btn{
     display: inline-block;
     text-decoration: none;
@@ -120,6 +137,7 @@ nav img{
     position: relative;
     cursor: pointer;
 }
+
 .hero-btn:hover{
     border: 1px solid #f44336;
     background: #f44336;
@@ -127,6 +145,7 @@ nav img{
     transform: scale(1.1);
 }
 
+/* Hide Font Awesome Icon */
 nav .fa{
     display: none;
 }
@@ -177,30 +196,84 @@ nav .fa{
     background-color: #45a049; /* Darker green on hover */
   }
 
+/* Main Content Styles
+.container {
+    display: flex;
+} */
+
+/* Main Content Styles */
+main {
+    position: absolute; 
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    display: flex;
+    padding: 20px; 
+    z-index: 10;  
+    background-color: rgba(255, 255, 255, 0.8); 
+}
+
+.video-player {
+    width: 65%; 
+    margin-right: 20px; 
+}
+
+.playlist-section {
+    width: 35%;
+    background-color: rgba(255, 255, 255, 0.9); 
+}
+
+#video-container {
+    /* Style the iframe as needed */
+}
+
+#playlist-selection {
+    margin-bottom: 1em;
+}
+
+#video-list li {
+    list-style: none;
+    padding: 0.5em;
+    border-bottom: 1px solid #ddd;
+}
+
+#video-list a {
+    text-decoration: none;
+    color: #333;
+}
+
+#video-list a:hover {
+    text-decoration: underline;
+}
+
+#overview-section {
+    margin-top: 1em;
+}
+
+/* Mobile Media Query */
 @media(max-width: 700px){
-    *{
-        overflow-x: hidden;
-    }
     .text-box h1{
         font-size: 20px;
     }
 
-    .nav-links{
+    .nav-links {
         position: absolute;
         background: #f44336;
         height: 100vh;
         width: 200px;
         top: 0;
-        right: -200px;
+        right: -200px; /* Initially hidden off-screen */
         text-align: left;
         z-index: 2;
+        transition: 0.5s; /* Add a transition for smooth animation */
     }
 
-    .nav-links ul li{
-        display: block;
+    .nav-links ul li {
+        display: block; /* Stack list items vertically */
     }
 
-    nav .fa{
+    nav .fa {
         display: block;
         color: #fff;
         font-size: 22px;
@@ -208,7 +281,12 @@ nav .fa{
         cursor: pointer;
     }
 
-    .nav-links ul{
+    .nav-links ul {
         padding: 30px;
+    }
+
+    /* Show the menu when right is 0 */
+    .nav-links.show-menu { 
+        right: 0;
     }
 }

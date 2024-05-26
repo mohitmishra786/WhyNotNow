@@ -3,35 +3,73 @@
 <head>
     <title>YouTube Playlist Course</title>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <link rel="stylesheet" href="../styles.css"> 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.2/css/all.min.css">
     <style>
-        /* Add CSS styles here */
+        /* Add CSS styles here if needed */
     </style>
 </head>
 <body>
-    <h1>My YouTube Playlist Course</h1>
+    <div class="container">
+        <header class="header">
+            <nav>
+                <a href="home.html"><img src="../images/logo.jpg"></a>
+                <div class="nav-links" id="navLinks">
+                    <i class="fa fa-times" onclick="hideMenu()"></i>
+                    <ul>
+                        <li><a href="../home/home.html">Home</a></li>
+                        <li class="dropdown"> 
+                            <a href="#" class="dropbtn">Playlist</a> <div class="dropdown-content">
+                                <a href="../domain/index.html?playlist=Python">Python</a>
+                                <a href="../domain/index.html?playlist=Java">Java</a>
+                                <a href="../domain/index.html?playlist=Assembly">Assembly Language</a>
+                            </div>
+                        </li>
+                        <li><a href="../articles/articles.html">Article</a></li>
+                        <li><a href="../contact/contact.html">Contact</a></li>
+                        <li><a href="../about/about.html">About</a></li>
+                        <li><a href="../logout/logout.html">Logout</a></li>
+                    </ul>
+                </div>
+                <i class="fa fa-bars" onclick="showMenu()"></i>
+            </nav>
 
-    <div id="playlist-selection" style="display: none;"> 
-        <label for="playlist-dropdown">Select Playlist:</label>
-        <select id="playlist-dropdown"></select>
+            <main> 
+                <section class="video-player">
+                    <div id="video-container">
+                        <p>Click on a video to play it here:</p>
+                        <iframe id="video-iframe" width="640" height="360" src="" frameborder="0" allowfullscreen></iframe>
+                    </div>
+                    <div id="overview-section">
+                        <h2 id="playlist-title"></h2>
+                        <p id="playlist-description"></p>
+                    </div>
+                </section>
+                <section class="playlist-section">
+                    <div id="playlist-selection"> 
+                        <label for="playlist-dropdown">Select Playlist:</label>
+                        <select id="playlist-dropdown">
+                            <option value="">-----</option> 
+                        </select>
+                    </div>
+                    <ul id="video-list"></ul> 
+                </section>
+            </main> 
+
+        </header>
+        <footer>
+            <!-- Add footer content if needed -->
+        </footer>
     </div>
-
-    <div id="playlist-container">
-        <h2 id="playlist-title"></h2>
-        <p id="playlist-description"></p>
-        <ul id="video-list"></ul> 
-    </div>
-
-    <div id="video-container">
-        <p>Click on a video to play it here:</p>
-        <iframe id="video-iframe" width="640" height="360" src="" frameborder="0" allowfullscreen></iframe>
-    </div>
-
-    <button onclick="window.location.href = '/home'">Home</button> <br><br>
-    <button onclick="window.location.href = '/logout'">Logout</button>
-
     <script>
         const playlistDropdown = document.getElementById('playlist-dropdown');
-        let currentPlaylistId = ''; 
+        let currentPlaylistId = '';
+        let allPlaylistItems = []; // Array to store all playlist items
+        let currentPage = 1;       // Current page number
+        const videosPerPage = 10;   // Number of videos to display per page
 
         // Function to get the playlist from URL query parameter
         function getPlaylistFromUrl() {
@@ -51,7 +89,7 @@
 
                 // Now fetch user progress and display the playlist
                 const userProgress = await fetchUserProgress();
-                displayPlaylist(details, items, userProgress); 
+                displayPlaylist(allPlaylistItems[0].snippet, allPlaylistItems, {}); // Pass details from the first item
 
             } catch (error) {
                 console.error("Error loading playlist:", error);
@@ -61,6 +99,7 @@
         // Event listener for playlist selection change
         playlistDropdown.addEventListener('change', () => {
             const selectedPlaylistId = playlistDropdown.value;
+            currentPage = 1; // Reset to first page whenever a new playlist is chosen
             loadPlaylist(selectedPlaylistId); 
         });
 
@@ -97,20 +136,43 @@
             }
         }
 
+        function onVideoClick(event) {
+            event.preventDefault(); 
+            const videoId = event.target.href.split('v=')[1];
+            const iframe = document.getElementById("video-iframe");
+            iframe.src = `https://www.youtube.com/embed/${videoId}`; 
+
+            // Get playlist details 
+            const playlistName = event.target.closest('li').querySelector('a').textContent; // Use textContent
+            fetch(`http://localhost:5000/playlist?playlist=${playlistName}`) // Remove pageToken from the URL
+                .then(response => response.json())
+                .then(playlistData => {
+                    document.getElementById('playlist-title').textContent = playlistData.details.title;
+                    document.getElementById('playlist-description').textContent = playlistData.details.description;
+                })
+                .catch(error => {
+                    console.error("Error fetching playlist data:", error);
+                });
+        }
+
         function displayPlaylist(details, items, userProgress) {
             const playlistTitle = document.getElementById("playlist-title");
             const playlistDescription = document.getElementById("playlist-description");
             const videoList = document.getElementById("video-list");
 
-            // Clear previous playlist data
-            playlistTitle.textContent = "";
-            playlistDescription.textContent = "";
+            // Populate playlist details
+            playlistTitle.textContent = details.title;
+            playlistDescription.textContent = details.description[50];
+
+            // Clear previous video list and buttons
             videoList.innerHTML = ""; 
 
-            playlistTitle.textContent = details.title;
-            playlistDescription.textContent = details.description;
+            // Display current page videos using a for loop
+            const startIndex = (currentPage - 1) * videosPerPage;
+            const endIndex = Math.min(startIndex + videosPerPage, items.length);
+            for (let i = startIndex; i < endIndex; i++) { // Use a for loop for pagination
+                const item = items[i];
 
-            items.forEach(item => {
                 const listItem = document.createElement("li");
                 const videoLink = document.createElement("a");
                 videoLink.href = `https://www.youtube.com/watch?v=${item.snippet.resourceId.videoId}`;
@@ -132,15 +194,36 @@
 
                 listItem.appendChild(checkbox);
                 listItem.appendChild(videoLink); 
-                videoList.appendChild(listItem); 
-            });
+                videoList.appendChild(listItem);
+            }
+
+            // Add "Previous" and "Next" buttons
+            createPaginationButtons(videoList, allPlaylistItems.length); // Pass total videos
         }
 
-        function onVideoClick(event) {
-            event.preventDefault();
-            const videoId = event.target.href.split('v=')[1];
-            const iframe = document.getElementById("video-iframe");
-            iframe.src = `https://www.youtube.com/embed/${videoId}`;
+        function createPaginationButtons(videoList, totalVideos) {
+            const prevButton = document.createElement('button');
+            prevButton.textContent = 'Previous';
+            prevButton.disabled = currentPage === 1; // Disable if on first page
+            prevButton.addEventListener('click', () => {
+                currentPage--;
+                displayPlaylist({ title: document.getElementById('playlist-title').textContent, 
+                                description: document.getElementById('playlist-description').textContent }, 
+                                allPlaylistItems, {}); 
+            });
+
+            const nextButton = document.createElement('button');
+            nextButton.textContent = 'Next';
+            nextButton.disabled = currentPage * videosPerPage >= totalVideos; // Disable if on last page
+            nextButton.addEventListener('click', () => {
+                currentPage++;
+                displayPlaylist({ title: document.getElementById('playlist-title').textContent, 
+                                description: document.getElementById('playlist-description').textContent }, 
+                                allPlaylistItems, {}); 
+            });
+
+            videoList.appendChild(prevButton);
+            videoList.appendChild(nextButton);
         }
 
         // Fetch available playlists and populate the dropdown
@@ -181,16 +264,45 @@
                             option.text = playlistName;
                             playlistDropdown.add(option);
                         }
-
-                        // Load the first playlist by default (REMOVE THIS BLOCK)
-                        // if (Object.keys(playlists).length > 0) {
-                        //     const firstPlaylistId = Object.values(playlists)[0];
-                        //     loadPlaylist(firstPlaylistId); 
-                        // }
                     }
                 })
                 .catch(error => console.error('Error fetching playlists:', error));
+
+            // Fetch ALL playlist items when a playlist is selected
+            playlistDropdown.addEventListener('change', async () => {
+                const selectedPlaylistId = playlistDropdown.value;
+                currentPage = 1; // Reset to first page
+                allPlaylistItems = []; // Clear existing playlist items
+
+                // Fetch all items for the selected playlist (with pagination)
+                try {
+                    let nextPageToken = null; // Initialize nextPageToken only once 
+                    do {
+                        const playlistName = Object.keys(window.playLists).find(key => window.playLists[key] === selectedPlaylistId);
+                        const response = await axios.get(`http://localhost:5000/playlist?playlist=${playlistName}&pageToken=${nextPageToken}`); 
+
+                        allPlaylistItems = allPlaylistItems.concat(response.data.items);
+                        nextPageToken = response.data.nextPageToken; // Update nextPageToken for the next iteration
+
+                    } while (nextPageToken); 
+
+                    loadPlaylist(selectedPlaylistId); // Now display the first page
+
+                } catch (error) {
+                    console.error("Error loading all playlist items:", error);
+                }
+            });
         });
+
+        // JavaScript for Toggle Menu 
+        var navLinks = document.getElementById("navLinks");
+        function showMenu(){
+          navLinks.style.right = "0";
+        }
+    
+        function hideMenu(){
+          navLinks.style.right = "-200px";
+        }
     </script>
 </body>
 </html>

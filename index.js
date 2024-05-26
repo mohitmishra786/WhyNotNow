@@ -121,8 +121,18 @@ app.get('/playlist', async (req, res) => {
             return res.status(404).send('Playlist not found');
         }
 
+        // Correctly handle the initial pageToken 
+        let pageToken = req.query.pageToken; 
+        if (pageToken === 'null' || pageToken === null || pageToken === 'undefined' || pageToken === undefined) { 
+            pageToken = ''; 
+        }
         const playlistDetailsUrl = `https://www.googleapis.com/youtube/v3/playlists?part=snippet&id=${playlistId}&key=${apiKey}`;
         const playlistDetailsResponse = await axios.get(playlistDetailsUrl);
+
+        // Log key variables and the API request URL
+        console.log("Playlist Name:", playlistName);
+        console.log("Playlist ID:", playlistId);
+        console.log("Page Token:", pageToken);
       
         // --- Check if items array is empty ---
         if (!playlistDetailsResponse.data.items || playlistDetailsResponse.data.items.length === 0) {
@@ -131,14 +141,15 @@ app.get('/playlist', async (req, res) => {
         }
 
         const playlistDetails = playlistDetailsResponse.data.items[0].snippet;
-    
-        const playlistItemsUrl = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=${playlistId}&key=${apiKey}`;
+
+        const playlistItemsUrl = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=${playlistId}&key=${apiKey}&pageToken=${pageToken}`;
         const playlistItemsResponse = await axios.get(playlistItemsUrl);
         const playlistItems = playlistItemsResponse.data.items;
-    
+
         res.json({
             details: playlistDetails,
-            items: playlistItems
+            items: playlistItems,
+            nextPageToken: playlistItemsResponse.data.nextPageToken
         });
     } catch (error) {
         console.error("Error fetching playlist data:", error);

@@ -7,6 +7,9 @@ const session = require('express-session');
 const path = require('path');
 const helmet = require('helmet');
 const cookieParser = require('cookie-parser');
+const nodemailer = require('nodemailer');
+const bodyParser = require('body-parser');
+const url = require('url');
 require('dotenv').config();
 
 const app = express();
@@ -21,7 +24,8 @@ const port = process.env.PORT || 5000;
 app.use(express.static(path.join(__dirname, 'public')));
 
 const apiKey = process.env.YOUTUBE_API_KEY;
-const playlistId = process.env.PLAYLIST_ID; 
+// Access Playlists from .env
+const playLists = JSON.parse(process.env.PLAYLISTS);
 
 // MySQL Database Connection
 const db = mysql.createConnection({
@@ -56,19 +60,82 @@ app.use(helmet({
     }
 }));
 
-// Fetch playlist data
+// Middleware to parse form data
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+
+// Route to handle contact form submission
+app.post('/send-email', (req, res) => {
+    const { name, email, subject, message } = req.body;
+  
+    // Create a transporter using your email provider's settings
+    const transporter = nodemailer.createTransport({
+      service: 'gmail', // e.g., 'gmail', 'yahoo', 'hotmail'
+      auth: {
+        user: 'immadmohit@gmail.com', 
+        pass: 'yhlk rzfk pdes rqlu'
+      }
+    });
+  
+    // Set up email data
+    const mailOptions = {
+      from: email, // Sender's email (from the form)
+      to: 'immadmohit@gmail.com', // Your email address 
+      subject: subject,
+      text: `Name: ${name}\nEmail: ${email}\n\n${message}`
+    };
+  
+    // Send the email
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.log('Error sending email:', error);
+        res.status(500).send('Error sending email'); // Respond with an error
+      } else {
+        console.log('Email sent:', info.response);
+        res.redirect('/contact/contact.html'); // Redirect on success
+      }
+    });
+  });
+
+// Route to serve available playlists
+app.get('/playlists', (req, res) => {
+    res.json(playLists); 
+  });
+
+// Fetch playlist data 
 app.get('/playlist', async (req, res) => {
     try {
+        // Get playlist NAME from query parameters 
+        const playlistName = req.query.playlist; // Now read the 'playlist' parameter
+        console.log("Playlist Name:", playlistName); 
+
+        if (!playlistName) {
+            return res.status(400).send('Missing playlist name');
+        }
+
+        // Look up the playlist ID from the playLists object 
+        const playlistId = playLists[playlistName]; 
+
+        if (!playlistId) {
+            console.error("Playlist not found:", playlistName);
+            return res.status(404).send('Playlist not found');
+        }
+
         const playlistDetailsUrl = `https://www.googleapis.com/youtube/v3/playlists?part=snippet&id=${playlistId}&key=${apiKey}`;
         const playlistDetailsResponse = await axios.get(playlistDetailsUrl);
-        const playlistDetails = playlistDetailsResponse.data.items[0].snippet;
+      
+        // --- Check if items array is empty ---
+        if (!playlistDetailsResponse.data.items || playlistDetailsResponse.data.items.length === 0) {
+            console.error("Playlist not found or is empty:", playlistId);
+            return res.status(404).send('Playlist not found'); 
+        }
 
+        const playlistDetails = playlistDetailsResponse.data.items[0].snippet;
+    
         const playlistItemsUrl = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=${playlistId}&key=${apiKey}`;
         const playlistItemsResponse = await axios.get(playlistItemsUrl);
         const playlistItems = playlistItemsResponse.data.items;
-
-        console.log("YouTube API Response:", playlistDetailsResponse.data);
-
+    
         res.json({
             details: playlistDetails,
             items: playlistItems

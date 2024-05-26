@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta name="viewport" content="with=device-width, initial-scale=1.0">
-  <title>Contact Us - WNN</title>
+  <title>Home - WNN</title>
   <link rel="stylesheet" href="../styles.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -10,9 +10,9 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.2/css/all.min.css">
 </head>
 <body>
-  <section class="header"> 
+  <section class="header">
     <nav>
-      <a href="home.html"><img src="../images/logo.jpg" alt="WNN Logo"></a>
+      <a href="home.html"><img src="../images/logo.jpg"></a>
       <div class="nav-links" id="navLinks">
         <i class="fa fa-times" onclick="hideMenu()"></i>
         <ul>
@@ -20,9 +20,9 @@
           <li class="dropdown"> 
             <a href="../domain/index.html" class="dropbtn">Playlist</a>
             <div class="dropdown-content">
-              <a href="#">Option 1</a>
-              <a href="#">Option 2</a>
-              <a href="#">Option 3</a>
+              <a href="../domain/index.html?playlist=Python">Python</a>
+              <a href="../domain/index.html?playlist=Java">Java</a>
+              <a href="../domain/index.html?playlist=Assembly">Assembly Language</a>
             </div>
           </li>
           <li><a href="../articles/articles.html">Article</a></li>
@@ -35,6 +35,7 @@
     </nav>
   </section>
 
+  <!-- JavaScript for Toggle Menu -->
   <script>
     var navLinks = document.getElementById("navLinks");
     function showMenu(){
